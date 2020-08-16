@@ -118,3 +118,20 @@ print("\nx")
 print(x)
 print("\nx.item()")
 print(x.item())
+
+# Read later:
+
+# 100+ Tensor operations, including transposing, indexing, slicing,
+#  mathematical operations, linear algebra, random numbers, etc.,
+#  are described [here](https://pytorch.org/docs/stable/torch.html).
+
+
+# NumPy Bridge
+
+# Converting a Torch Tensor to a NumPy array and vice versa is a breeze.
+# 
+# The Torch Tensor and NumPy array will share their underlying memory locations 
+# (if the Torch Tensor is on CPU), and changing one will change the other.
+
+# Converting a Torch Tensor to a NumPy Array
+
