@@ -6,9 +6,9 @@
 #     A replacement for NumPy to use the power of GPUs
 #     a deep learning research platform that provides maximum flexibility and speed
 
-# Getting Started
+# 1. Getting Started
 
-# Tensors
+# 1.1 Tensors
 # Tensors are similar to NumPy’s ndarrays, with the addition being that Tensors can also be used on a GPU to accelerate computing.
 
 from __future__ import print_function
@@ -65,7 +65,7 @@ print(x.size())
 # torch.Size is in fact a tuple, so it supports all tuple operations.
 
 
-# Operations
+# 1.2 Operations
 # There are multiple syntaxes for operations.
 #  In the following example, we will take a look at the addition operation.
 
@@ -126,9 +126,9 @@ print(x.item())
 #  are described [here](https://pytorch.org/docs/stable/torch.html).
 
 
-# NumPy Bridge
+# 2. NumPy Bridge
 
-# Converting a Torch Tensor to a NumPy array and vice versa is a breeze.
+# 2.1 Converting a Torch Tensor to a NumPy array and vice versa is a breeze.
 # 
 # The Torch Tensor and NumPy array will share their underlying memory locations 
 # (if the Torch Tensor is on CPU), and changing one will change the other.
@@ -153,4 +153,33 @@ print("\nb")
 print(b)
 
 
-# Converting NumPy Array to Torch Tensor
+# 2.2 Converting NumPy Array to Torch Tensor
+
+# See how changing the np array changed the Torch Tensor automatically
+
+import numpy as np
+a = np.ones(5)
+b = torch.from_numpy(a)
+np.add(a, 1, out=a)
+print("\na = np.ones(5)\nb = torch.from_numpy(a)\nnp.add(a, 1, out=a)")
+print(a)
+print(b)
+
+# All the Tensors on the CPU except a CharTensor support converting to NumPy and back.
+
+
+# 3. CUDA Tensors
+
+# Tensors can be moved onto any device using the .to method.
+
+# let us run this cell only if CUDA is available
+# We will use ``torch.device`` objects to move tensors in and out of GPU
+if torch.cuda.is_available():
+    device = torch.device("cuda")          # a CUDA device object
+    y = torch.ones_like(x, device=device)  # directly create a tensor on GPU
+    x = x.to(device)                       # or just use strings ``.to("cuda")``
+    z = x + y
+    print(z)
+    print(z.to("cpu", torch.double))       # ``.to`` can also change dtype together!
+
+    
