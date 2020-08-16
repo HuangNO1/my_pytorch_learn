@@ -170,6 +170,9 @@ print(b)
 
 # 3. CUDA Tensors
 
+# 需要 CUDA 才可以使用 GPU 計算，所以 torch.cuda.is_available() 判斷是否可以使用 GPU 進行運算
+# CUDA（Compute Unified Device Architecture，统一计算架构）是由NVIDIA所推出的一種整合技術，
+# 是該公司對於GPGPU的正式名稱。 透過這個技術，使用者可利用NVIDIA的GeForce 8以後的GPU和較新的Quadro GPU进行计算。
 # Tensors can be moved onto any device using the .to method.
 
 # let us run this cell only if CUDA is available
@@ -182,4 +185,3 @@ if torch.cuda.is_available():
     print(z)
     print(z.to("cpu", torch.double))       # ``.to`` can also change dtype together!
 
-    
