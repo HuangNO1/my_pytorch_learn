@@ -135,3 +135,22 @@ print(x.item())
 
 # Converting a Torch Tensor to a NumPy Array
 
+a = torch.ones(5)
+print("\na = torch.ones(5)")
+print(a)
+
+# share their underlying memory locations 
+b = a.numpy()
+print("\nb = a.numpy()")
+print(b)
+
+# See how the numpy array changed in value.
+
+a.add_(1)
+print("\na.add_(1) / print(a)")
+print(a)
+print("\nb")
+print(b)
+
+
+# Converting NumPy Array to Torch Tensor
