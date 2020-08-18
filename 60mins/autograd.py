@@ -124,3 +124,9 @@ print(x.requires_grad)
 y = x.detach()
 print(y.requires_grad)
 print(x.eq(y).all())
+
+# Read Later:
+
+# Document about autograd.Function is at https://pytorch.org/docs/stable/autograd.html#function
+
+# Total running time of the script: ( 0 minutes 3.601 seconds)
