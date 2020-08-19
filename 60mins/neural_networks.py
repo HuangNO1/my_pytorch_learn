@@ -123,3 +123,95 @@ out.backward(torch.randn(1, 10))
 
 
 
+# 3. Loss Function
+# 
+# A loss function takes the (output, target) pair of inputs, and computes a value that estimates how far away the output is from the target.
+# 
+# There are several different loss functions under the nn package . A simple loss is: nn.MSELoss which computes the mean-squared error between the input and the target.
+# 
+# For example:
+
+output = net(input)
+target = torch.randn(10)  # a dummy target, for example
+target = target.view(1, -1)  # make it the same shape as output
+criterion = nn.MSELoss()
+
+loss = criterion(output, target)
+print(loss)
+
+# Now, if you follow loss in the backward direction,
+#  using its .grad_fn attribute, you will see a graph of computations that looks like this:
+
+# input -> conv2d -> relu -> maxpool2d -> conv2d -> relu -> maxpool2d
+    #   -> view -> linear -> relu -> linear -> relu -> linear
+    #   -> MSELoss
+    #   -> loss
+
+# So, when we call loss.backward(), the whole graph is differentiated w.r.t. the loss,
+#  and all Tensors in the graph that has requires_grad=True will have their .grad Tensor accumulated with the gradient.
+# 
+# For illustration, let us follow a few steps backward:
+
+
+print(loss.grad_fn)  # MSELoss
+print(loss.grad_fn.next_functions[0][0])  # Linear
+print(loss.grad_fn.next_functions[0][0].next_functions[0][0])  # ReLU
+
+
+# 4. Backprop
+# 
+# To backpropagate the error all we have to do is to loss.backward(). You need to clear the existing gradients though, else gradients will be accumulated to existing gradients.
+# 
+# Now we shall call loss.backward(), and have a look at conv1’s bias gradients before and after the backward.
+
+
+# Now, we have seen how to use loss functions.
+# 
+# Read Later:
+# 
+    # The neural network package contains various modules and
+    #  loss functions that form the building blocks of deep neural networks.
+    #  A full list with documentation is here.
+# 
+# The only thing left to learn is:
+# 
+        # Updating the weights of the network
+
+# 5. Update the weights
+# 
+# The simplest update rule used in practice is the Stochastic Gradient Descent (SGD):
+# 
+    # weight = weight - learning_rate * gradient
+# 
+# We can implement this using simple Python code:
+
+learning_rate = 0.01
+for f in net.parameters():
+    f.data.sub_(f.grad.data * learning_rate)
+
+
+# However, as you use neural networks, you want to use various different update rules such as SGD,
+#  Nesterov-SGD, Adam, RMSProp, etc. To enable this,
+#  we built a small package: torch.optim that implements all these methods. Using it is very simple:
+
+import torch.optim as optim
+
+# create your optimizer
+optimizer = optim.SGD(net.parameters(), lr=0.01)
+
+# in your training loop:
+optimizer.zero_grad()   # zero the gradient buffers
+output = net(input)
+loss = criterion(output, target)
+loss.backward()
+optimizer.step()    # Does the update
+
+
+
+
+# Note
+# 
+# Observe how gradient buffers had to be manually set to zero using optimizer.zero_grad().
+#  This is because gradients are accumulated as explained in the Backprop section.
+# 
+# Total running time of the script: ( 0 minutes 3.630 seconds)
