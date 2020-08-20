@@ -1,6 +1,6 @@
 # https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 
-Training a Classifier
+# Training a Classifier
 
 # This is it. You have seen how to define neural networks, compute loss and make updates to the weights of the network.
 # 
@@ -131,7 +131,7 @@ import torch.optim as optim
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-4. Train the network
+# 4. Train the network
 
 # This is when things start to get interesting. We simply have to loop over our data iterator,
 #  and feed the inputs to the network and optimize.
