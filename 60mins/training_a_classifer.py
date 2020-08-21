@@ -173,7 +173,8 @@ torch.save(net.state_dict(), PATH)
 # 
 # We have trained the network for 2 passes over the training dataset. But we need to check if the network has learnt anything at all.
 # 
-# We will check this by predicting the class label that the neural network outputs, and checking it against the ground-truth. If the prediction is correct, we add the sample to the list of correct predictions.
+# We will check this by predicting the class label that the neural network outputs, and checking it against the ground-truth.
+#  If the prediction is correct, we add the sample to the list of correct predictions.
 # 
 # Okay, first step. Let us display an image from the test set to get familiar.
 
@@ -184,4 +185,104 @@ images, labels = dataiter.next()
 imshow(torchvision.utils.make_grid(images))
 print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(4)))
 
+# Next, let’s load back in our saved model (note: saving and re-loading the model wasn’t necessary here,
+#  we only did it to illustrate how to do so):
 
+net = Net()
+net.load_state_dict(torch.load(PATH))
+
+# Okay, now let us see what the neural network thinks these examples above are:
+
+outputs = net(images)
+
+# The outputs are energies for the 10 classes. The higher the energy for a class,
+#  the more the network thinks that the image is of the particular class. So,
+#  let’s get the index of the highest energy:
+
+_, predicted = torch.max(outputs, 1)
+
+print('Predicted: ', ' '.join('%5s' % classes[predicted[j]]
+                              for j in range(4)))
+
+# The results seem pretty good.
+
+# Let us look at how the network performs on the whole dataset.
+
+correct = 0
+total = 0
+with torch.no_grad():
+    for data in testloader:
+        images, labels = data
+        outputs = net(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+print('Accuracy of the network on the 10000 test images: %d %%' % (
+    100 * correct / total))
+
+
+# That looks way better than chance, which is 10% accuracy (randomly picking a class out of 10 classes).
+#  Seems like the network learnt something.
+# 
+# Hmmm, what are the classes that performed well, and the classes that did not perform well:
+
+class_correct = list(0. for i in range(10))
+class_total = list(0. for i in range(10))
+with torch.no_grad():
+    for data in testloader:
+        images, labels = data
+        outputs = net(images)
+        _, predicted = torch.max(outputs, 1)
+        c = (predicted == labels).squeeze()
+        for i in range(4):
+            label = labels[i]
+            class_correct[label] += c[i].item()
+            class_total[label] += 1
+
+
+for i in range(10):
+    print('Accuracy of %5s : %2d %%' % (
+        classes[i], 100 * class_correct[i] / class_total[i]))
+
+# Okay, so what next?
+# 
+# How do we run these neural networks on the GPU?
+
+
+# Training on GPU
+# 
+# Just like how you transfer a Tensor onto the GPU, you transfer the neural net onto the GPU.
+# 
+# Let’s first define our device as the first visible cuda device if we have CUDA available:
+
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+# Assuming that we are on a CUDA machine, this should print a CUDA device:
+
+print(device)
+
+# The rest of this section assumes that device is a CUDA device.
+# 
+# Then these methods will recursively go over all modules and convert their parameters and buffers to CUDA tensors:
+
+net.to(device)
+
+# Remember that you will have to send the inputs and targets at every step to the GPU too:
+
+inputs, labels = data[0].to(device), data[1].to(device)
+
+# Why dont I notice MASSIVE speedup compared to CPU? Because your network is really small.
+# 
+# Exercise: Try increasing the width of your network (argument 2 of the first nn.Conv2d, and argument 1 of the second nn.Conv2d – they need to be the same number), see what kind of speedup you get.
+# 
+# Goals achieved:
+# 
+    # Understanding PyTorch’s Tensor library and neural networks at a high level.
+    # Train a small neural network to classify images
+# 
+# Training on multiple GPUs
+# 
+# If you want to see even more MASSIVE speedup using all of your GPUs, please check out Optional: Data Parallelism.
+# 
