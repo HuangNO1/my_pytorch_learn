@@ -11,7 +11,7 @@
 # In this example we will use the nn package to define our model as before,
 #  but we will optimize the model using the Adam algorithm provided by the optim package:
 
- -*- coding: utf-8 -*-
+#  -*- coding: utf-8 -*-
 import torch
 
 # N is batch size; D_in is input dimension;
